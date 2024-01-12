@@ -17,7 +17,8 @@ const {
   findProduct,
   updateProductById,
 } = require("../repositories/product.repo");
-const { removeUndefinedObject } = require("../utils");
+const { removeUndefinedObject, updateNestedObjectParser } = require("../utils");
+const { insertInventory } = require("../repositories/inventory.repo");
 
 // define Factory class to create product
 class ProductFactory {
@@ -41,8 +42,9 @@ class ProductFactory {
 
   static async updateProduct(type, productId, payload) {
     const productClass = ProductFactory.productRegistry[type];
-    if (!productClass)
+    if (!productClass) {
       throw new BadRequestError(`Invalid Product Types ${type}`);
+    }
 
     return new productClass(payload).updateProduct(productId);
   }
@@ -112,7 +114,17 @@ class Product {
   }
 
   async createProduct(productId) {
-    return await product.create({ ...this, _id: productId });
+    const newProduct = await product.create({ ...this, _id: productId });
+    if (newProduct) {
+      // add product_stock to inventory
+      await insertInventory({
+        productId,
+        shopId: this.product_shop,
+        stock: this.product_quantity,
+      })
+    }
+
+    return newProduct;
   }
 
   async updateProduct(productId, bodyUpdate) {
@@ -144,12 +156,15 @@ class Clothing extends Product {
     if (objectParams.product_attributes) {
       await updateProductById({
         productId,
-        bodyUpdate: objectParams.product_attributes,
+        bodyUpdate: updateNestedObjectParser(objectParams.product_attributes),
         model: clothing,
       });
     }
 
-    return await super.updateProduct(productId, objectParams);
+    return await super.updateProduct(
+      productId,
+      updateNestedObjectParser(objectParams)
+    );
   }
 }
 

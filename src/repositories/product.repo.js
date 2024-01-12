@@ -9,13 +9,11 @@ const findAllDraftsForShop = async ({ query, limit, skip }) => {
 };
 
 const findAllPublishForShop = async ({ query, limit, skip }) => {
-  console.log(1111);
   return await queryProduct({ query, limit, skip });
 };
 
 const searchProductByUser = async ({ keySearch }) => {
   const regexSearch = new RegExp(keySearch);
-  console.log(regexSearch);
   return await product
     .find(
       {

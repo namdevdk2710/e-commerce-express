@@ -2,7 +2,7 @@ const { Schema, model } = require("mongoose"); // Erase if already required
 const { default: slugify } = require("slugify");
 
 const DOCUMENT_NAME = "Product";
-const COLLECTION_NAME = "Products";
+const COLLECTION_NAME = "products";
 
 // Declare the Schema of the Mongo model
 const productSchema = new Schema(
@@ -57,7 +57,7 @@ const clothingSchema = new Schema(
   },
   {
     timestamps: true,
-    collection: "Clothes",
+    collection: "clothes",
   }
 );
 
@@ -71,7 +71,7 @@ const electronicSchema = new Schema(
   },
   {
     timestamps: true,
-    collection: "Electronic",
+    collection: "electronic",
   }
 );
 
@@ -85,7 +85,7 @@ const furnitureSchema = new Schema(
   },
   {
     timestamps: true,
-    collection: "Furniture",
+    collection: "furniture",
   }
 );
 

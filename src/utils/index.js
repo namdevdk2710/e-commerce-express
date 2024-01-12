@@ -1,6 +1,9 @@
 "use strict";
 
 const _ = require("lodash");
+const { Types } = require("mongoose");
+
+const convertToObjectId = (id) => new Types.ObjectId(id);
 
 const getInfoData = ({ fields = [], object = {} }) => {
   return _.pick(object, fields);
@@ -24,9 +27,27 @@ const removeUndefinedObject = (obj) => {
   return obj;
 };
 
+const updateNestedObjectParser = (obj) => {
+  const final = {};
+  Object.keys(obj).forEach((k) => {
+    if (typeof obj[k] === "object" && !Array.isArray(obj[k])) {
+      const response = updateNestedObjectParser(obj[k]);
+      Object.keys(response).forEach((a) => {
+        final[`${k}.${a}`] = response[a];
+      });
+    } else {
+      final[k] = obj[k];
+    }
+  });
+
+  return final;
+};
+
 module.exports = {
   getInfoData,
   getSelectData,
   getUnselectData,
   removeUndefinedObject,
+  updateNestedObjectParser,
+  convertToObjectId,
 };
