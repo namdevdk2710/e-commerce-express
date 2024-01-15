@@ -66,7 +66,7 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
     .lean();
 };
 
-const findProduct = async ({ product_id, unSelect }) => {
+const findProduct = async ({ product_id, unSelect = [] }) => {
   return await product
     .findOne({ _id: product_id, isPublished: true })
     .select(getUnselectData(unSelect))
@@ -95,6 +95,21 @@ const updateProductById = async ({
   });
 };
 
+const checkProductByServer = async (products) => {
+  return await Promise.all(
+    products.map(async (product) => {
+      const foundProduct = await findProduct({ product_id: product.productId });
+      if (foundProduct) {
+        return {
+          price: foundProduct.product_price,
+          quantity: product.quantity,
+          productId: product.productId,
+        };
+      }
+    })
+  );
+};
+
 module.exports = {
   findAllDraftsForShop,
   findAllPublishForShop,
@@ -104,4 +119,5 @@ module.exports = {
   findAllProducts,
   findProduct,
   updateProductById,
+  checkProductByServer,
 };

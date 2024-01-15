@@ -166,7 +166,7 @@ class DiscountService {
     let totalOrder = 0;
     if (discount_min_order_value > 0) {
       totalOrder = products.reduce((total, product) => {
-        return total + product.product_price * product.quantity;
+        return total + product.price * product.quantity;
       }, 0);
 
       if (totalOrder < discount_min_order_value) {
@@ -175,8 +175,6 @@ class DiscountService {
         );
       }
     }
-
-    console.log(discount_min_order_value);
 
     if (discount_max_uses_per_user > 0 && discount_users_used) {
       const userUseDiscount = discount_users_used.find(
